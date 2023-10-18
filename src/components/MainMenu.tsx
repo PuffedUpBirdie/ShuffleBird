@@ -20,7 +20,7 @@ interface IProps {
 interface IState {
   folders: string[];
   interval: number;
-  datasets: any;
+  datasets: Record<string, string[]>;
   showDatasetCreation: boolean;
 }
 
@@ -61,13 +61,13 @@ export default class MainMenu extends React.Component<IProps, IState> {
   };
 
   removeDataSet = (dataset: string) => {
-    let { [dataset]: _, ...rest } = this.state.datasets;
+    const { [dataset]: _, ...rest } = this.state.datasets;
     this.setState({ datasets: rest });
 
     this.saveDatasets(rest);
   };
 
-  saveDatasets = (datasets: any) => {
+  saveDatasets = (datasets: Record<string, string[]>) => {
     localStorage.setItem("datasets", JSON.stringify(datasets));
   };
 
@@ -158,14 +158,14 @@ export default class MainMenu extends React.Component<IProps, IState> {
             {/* Create New Collection */}
             {this.state.showDatasetCreation && (
               <DatasetCreation
+                existingCollections={this.state.datasets}
                 onSave={this.saveDataSet}
                 onCancel={() => this.setState({ showDatasetCreation: false })}
               />
             )}
 
             {/* Interval Selection */}
-            {this.state.folders &&
-              this.state.folders.length &&
+            {this.state.folders?.length &&
               !this.state.showDatasetCreation && (
                 <IntervalSelector
                   onBack={this.clearFolders}

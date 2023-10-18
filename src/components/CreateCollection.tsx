@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Button from '@mui/material/Button';
 import { Alert, IconButton, List, ListItem, ListItemButton, ListSubheader, Snackbar, TextField } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface IProps {
+    existingCollections: Record<string, string[]>
     onSave(name: string, folders: string[]): void
     onCancel(): void
 }
@@ -13,6 +13,12 @@ const NewCollection = (props: IProps) => {
     const [name, setName] = useState("");
     const [folders, setFolders] = useState([]);
     const [isErrorOpen, setErrorOpen] = useState(false);
+
+    const nameAlreadyTaken = Object.keys(props.existingCollections)
+    .map(c => c.toLocaleLowerCase())
+    .includes(name.toLocaleLowerCase()) 
+
+    const hasInvalidName = !name || nameAlreadyTaken
 
     const onLoadFolder = async () => {
         const result = await window.funcs.loadFolder()
@@ -48,6 +54,8 @@ const NewCollection = (props: IProps) => {
                 variant="outlined"
                 className="wide"
                 value={name}
+                error={nameAlreadyTaken}
+                helperText={nameAlreadyTaken && 'A collection with this name already exists'}
                 onChange={(e) => setName(e.target.value)}
             />
             <List
@@ -81,7 +89,7 @@ const NewCollection = (props: IProps) => {
                 variant="contained"
                 className="wide"
                 color="success"
-                disabled={!folders.length || !name}
+                disabled={!folders.length || hasInvalidName}
             >
                 Save
             </Button>

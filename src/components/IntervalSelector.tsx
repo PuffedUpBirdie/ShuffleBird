@@ -98,7 +98,7 @@ export function IntervalSelector(props: IProps) {
           <Input
             size="small"
             onChange={(e) => !isNaN(+e.target.value) && props.setInterval(+e.target.value)}
-            value={props.interval === Infinity ? "-" : props.interval}
+            value={props.interval === Infinity ? "-" : props.interval ?? ''}
             sx={{
               mx: 1,
               maxWidth: "5rem",

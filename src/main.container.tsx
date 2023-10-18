@@ -1,7 +1,7 @@
 import React from "react";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import MainMenu from "./components/MainMenu";
-import ImageSlider from "./components/ImageSlider";
+import ImageSlider from "./components/ImageSlider/ImageSlider";
 
 interface IProps { }
 
@@ -32,7 +32,7 @@ export default class Main extends React.Component<IProps, IState> {
   render(): any {
   return(
     <ThemeProvider theme={darkTheme}>
-      {this.state.selectedFolders && this.state.selectedFolders.length
+      {this.state.selectedFolders?.length
         ? (<ImageSlider
             folders={this.state.selectedFolders}
             onStop={this.returnToMainMenu}

@@ -1,4 +1,3 @@
-import React from "react";
 import Logo from "../logo.png";
 
 export function Header() {
@@ -8,6 +7,8 @@ export function Header() {
         style={{
           display: "flex",
           alignItems: "center",
+          marginTop: "0",
+          marginBottom: "2rem"
         }}
       >
         <img
@@ -26,7 +27,7 @@ export function Header() {
               marginTop: "-3px",
             }}
           >
-            Random Image for Artists
+            Random Image Viewer for Artists
           </div>
         </div>
       </h1>

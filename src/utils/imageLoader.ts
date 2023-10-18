@@ -24,7 +24,7 @@ export class ImageLoader {
     }
 
     getRandomFilename = () => {
-        let randomImageIndex = Math.floor(Math.random() * this.files.length);
+        const randomImageIndex = Math.floor(Math.random() * this.files.length);
         return this.files[randomImageIndex]
     }
 
