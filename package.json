@@ -2,7 +2,7 @@
   "name": "shuffle-bird",
   "productName": "ShuffleBird",
   "version": "1.0.0",
-  "description": "A random image application for artists",
+  "description": "A random image viewer for artists",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
