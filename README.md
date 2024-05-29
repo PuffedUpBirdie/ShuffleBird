@@ -3,6 +3,9 @@ A random image viewer tool for artists that will display a slideshow of random i
 
 I was using [quickposes.com](https://quickposes.com) and [line-of-action.com](https://line-of-action.com/) but I needed to have timed images with my own local collections (weapons, capes and other stuff I want to study). I couldn't find one, so I created my own with the same options to shuffle and display random images but from a local folder or create collections with set folders.
 <p align="center">
+  <img src="readme_files/Screenshot2.png" alt="ShuffleBird screenshot" width="350" />
+</p>
+<p align="center">
   <img src="readme_files/screenshot.png" alt="ShuffleBird screenshot" width="350" />
 </p>
 Left/right arrows can be used to go to previous/next image, space to pause/resume, Esc to stop the slideshow.
