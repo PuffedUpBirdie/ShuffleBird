@@ -11,7 +11,7 @@ I was using [quickposes.com](https://quickposes.com) and [line-of-action.com](ht
 Left/right arrows can be used to go to previous/next image, space to pause/resume, Esc to stop the slideshow.
 
 ## Download
-Windows versions setup and portable version on [Release Page](https://github.com/PuffedUpBirdie/ShuffleBird/releases).
+macOS & Windows setup/portable version on [Release Page](https://github.com/PuffedUpBirdie/ShuffleBird/releases).
 
 ## Issues, Feedback and further changes.
 If you find issues, would like to requests some additional changes or would like to request any other tool that could be used by an artist, try to create a new issue here and let me know.
