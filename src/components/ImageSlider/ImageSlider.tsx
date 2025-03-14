@@ -4,6 +4,8 @@ import { ImageLoader } from "../../utils/imageLoader";
 import { Timer } from "../../utils/timer";
 import SliderControls from "./SliderControls";
 import Loader from "./Loader";
+import { getSettings } from "../../utils/localStorage";
+import { ImagePathContainer } from "./ImagePathContainer";
 
 interface IProps {
   folders: string[];
@@ -13,6 +15,7 @@ interface IProps {
 
 interface IState {
   files: string[];
+  filename: string;
   src: string;
   progress: number;
   isPaused: boolean;
@@ -22,12 +25,14 @@ interface IState {
 export default class ImageSlider extends React.Component<IProps, IState> {
   timer: Timer;
   imageLoader: ImageLoader;
+  settings = getSettings();
 
   constructor(params: IProps) {
     super(params);
 
     this.state = {
       files: [],
+      filename: "",
       src: undefined,
       progress: 0,
       isPaused: false,
@@ -39,9 +44,7 @@ export default class ImageSlider extends React.Component<IProps, IState> {
     window.funcs
       .getDirFilesList(this.props.folders)
       .then((files: string[]) => {
-        console.log("f", files);
         this.imageLoader = new ImageLoader(files);
-        //this.imageLoader.forward().then(image => )
         this.setState(
           { files: this.state.files.concat(files), hasLoaded: true },
           () => {
@@ -50,15 +53,13 @@ export default class ImageSlider extends React.Component<IProps, IState> {
               300,
               this.props.interval * 1000,
               this.loadNewImage,
-              this.onTick
+              this.onTick,
             );
             this.start();
-          }
+          },
         );
       })
       .catch(console.error);
-
-    console.log(this.props);
   }
 
   componentWillUnmount(): void {
@@ -75,7 +76,7 @@ export default class ImageSlider extends React.Component<IProps, IState> {
   loadRandomImage() {
     this.imageLoader
       .forward()
-      .then((image: string) => this.setState({ src: image }));
+      .then(({ filename, src }) => this.setState({ filename, src }));
   }
 
   start = () => {
@@ -84,9 +85,11 @@ export default class ImageSlider extends React.Component<IProps, IState> {
   };
 
   previousImage = () => {
-    this.imageLoader
-      .backwards()
-      .then((img: string) => this.setState({ src: img }));
+    this.imageLoader.backwards().then((result) => {
+      if (!result) return;
+      const { filename, src } = result;
+      this.setState({ filename, src });
+    });
     this.timer.reset();
   };
 
@@ -109,6 +112,10 @@ export default class ImageSlider extends React.Component<IProps, IState> {
       <div className="image-slider-area">
         {this.state.hasLoaded ? (
           <>
+            {this.settings.showImagePath && (
+              <ImagePathContainer filename={this.state.filename} />
+            )}
+
             <div id="image-container">
               {this.state.src && <img src={this.state.src} />}
             </div>

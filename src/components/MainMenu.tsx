@@ -33,7 +33,7 @@ export default class MainMenu extends React.Component<IProps, IState> {
 
     this.state = {
       folders: null,
-      interval: null,
+      interval: Infinity,
       datasets,
       showDatasetCreation: false,
     };
@@ -80,8 +80,8 @@ export default class MainMenu extends React.Component<IProps, IState> {
   };
 
   clearFolders = () => {
-    this.setState({folders: null})
-  }
+    this.setState({ folders: null });
+  };
 
   render() {
     return (
@@ -139,7 +139,7 @@ export default class MainMenu extends React.Component<IProps, IState> {
                             <DeleteIcon />
                           </IconButton>
                         </ListItem>
-                      )
+                      ),
                     )}
                   </List>
                 </div>
@@ -165,15 +165,14 @@ export default class MainMenu extends React.Component<IProps, IState> {
             )}
 
             {/* Interval Selection */}
-            {this.state.folders?.length &&
-              !this.state.showDatasetCreation && (
-                <IntervalSelector
-                  onBack={this.clearFolders}
-                  interval={this.state.interval}
-                  setInterval={this.setInterval}
-                  start={this.start}
-                />
-              )}
+            {this.state.folders?.length && !this.state.showDatasetCreation && (
+              <IntervalSelector
+                onBack={this.clearFolders}
+                interval={this.state.interval}
+                setInterval={this.setInterval}
+                start={this.start}
+              />
+            )}
           </div>
         </div>
       </>
