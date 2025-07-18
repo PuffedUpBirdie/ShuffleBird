@@ -55,6 +55,8 @@ const createWindow = (): void => {
   ipcMain.handle("getDirFilesList", (event, arg) => {
     console.log('arg', arg);
     return FileHound.create()
+      .ignoreHiddenDirectories()
+      .ignoreHiddenFiles()
       .paths(arg)
       .ext(['jpg', 'jpeg', 'png'])
       .find();
