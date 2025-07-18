@@ -1,7 +1,7 @@
 {
   "name": "shuffle-bird",
   "productName": "ShuffleBird",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A random image viewer for artists",
   "main": ".webpack/main",
   "scripts": {

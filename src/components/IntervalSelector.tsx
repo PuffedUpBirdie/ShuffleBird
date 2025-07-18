@@ -2,20 +2,39 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
   IconButton,
-  Input
+  Input,
 } from "@mui/material";
-import React from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { useState } from "react";
+import { getSettings, setSettings } from "../utils/localStorage";
 
 interface IProps {
-  interval?: number
-  setInterval: (interval: number) => void
-  onBack: () => void
-  start: () => void
+  interval?: number;
+  setInterval: (interval: number) => void;
+  onBack: () => void;
+  start: () => void;
 }
 
+const intervals = [10, 30, 60, 120, 240, 300];
+
 export function IntervalSelector(props: IProps) {
+  const [showImagePath, setShowImagePath] = useState<boolean>(
+    getSettings().showImagePath,
+  );
+
+  const handleChangeImagePath = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const showImagePath = event.target.checked;
+    const settings = getSettings();
+    setSettings({ ...settings, showImagePath });
+    setShowImagePath(showImagePath);
+  };
+
   return (
     <div>
       <div
@@ -24,10 +43,7 @@ export function IntervalSelector(props: IProps) {
           alignItems: "center",
         }}
       >
-        <IconButton
-          onClick={props.onBack}
-          aria-label="back"
-        >
+        <IconButton onClick={props.onBack} aria-label="back">
           <ChevronLeftIcon />
         </IconButton>
         Select Interval
@@ -46,59 +62,24 @@ export function IntervalSelector(props: IProps) {
             >
               No Interval
             </Button>
-            <Button
-              color={props.interval === 10 ? "info" : undefined}
-              onClick={() => {
-                props.setInterval(10);
-              }}
-            >
-              10
-            </Button>
-            <Button
-              color={props.interval === 30 ? "info" : undefined}
-              onClick={() => {
-                props.setInterval(30);
-              }}
-            >
-              30
-            </Button>
-            <Button
-              color={props.interval === 60 ? "info" : undefined}
-              onClick={() => {
-                props.setInterval(60);
-              }}
-            >
-              60
-            </Button>
-            <Button
-              color={props.interval === 120 ? "info" : undefined}
-              onClick={() => {
-                props.setInterval(120);
-              }}
-            >
-              120
-            </Button>
-            <Button
-              color={props.interval === 240 ? "info" : undefined}
-              onClick={() => {
-                props.setInterval(240);
-              }}
-            >
-              240
-            </Button>
-            <Button
-              color={props.interval === 300 ? "info" : undefined}
-              onClick={() => {
-                props.setInterval(300);
-              }}
-            >
-              300
-            </Button>
+
+            {intervals.map((interval) => (
+              <Button
+                color={props.interval === interval ? "info" : undefined}
+                onClick={() => {
+                  props.setInterval(interval);
+                }}
+              >
+                {interval}
+              </Button>
+            ))}
           </ButtonGroup>
           <Input
             size="small"
-            onChange={(e) => !isNaN(+e.target.value) && props.setInterval(+e.target.value)}
-            value={props.interval === Infinity ? "-" : props.interval ?? ''}
+            onChange={(e) =>
+              !isNaN(+e.target.value) && props.setInterval(+e.target.value)
+            }
+            value={props.interval === Infinity ? "-" : (props.interval ?? "")}
             sx={{
               mx: 1,
               maxWidth: "5rem",
@@ -107,6 +88,21 @@ export function IntervalSelector(props: IProps) {
               },
             }}
           ></Input>
+        </Box>
+      </div>
+      <div>
+        <Box mb={1}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={showImagePath}
+                  onChange={handleChangeImagePath}
+                />
+              }
+              label="Show image path"
+            />
+          </FormGroup>
         </Box>
       </div>
       <div>
