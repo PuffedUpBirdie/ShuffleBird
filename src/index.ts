@@ -24,6 +24,7 @@ const createWindow = (): void => {
     height: 600,
     width: 800,
     autoHideMenuBar: true,
+    backgroundColor: '#0a1929',
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
