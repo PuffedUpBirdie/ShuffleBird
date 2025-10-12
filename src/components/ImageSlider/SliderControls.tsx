@@ -4,14 +4,14 @@ import NextIcon from "@mui/icons-material/SkipNextRounded";
 import PreviousIcon from "@mui/icons-material/SkipPreviousRounded";
 import PauseIcon from "@mui/icons-material/PauseRounded";
 import StopIcon from "@mui/icons-material/StopRounded";
+import Fullscreen from "@mui/icons-material/Fullscreen";
+import FullscreenExit from "@mui/icons-material/FullscreenExit";
 import React from "react";
 
 interface IProps {
-  // folders: string[];
   progress: number;
   isPaused: boolean;
   hideProgressBar?: boolean;
-  // interval: number;
   onStart(): void;
   onPreviousImage(): void;
   onNextImage(): void;
@@ -20,22 +20,52 @@ interface IProps {
 }
 
 interface IState {
-  files: string[];
-  src: string;
-  progress: number;
+  isFullscreen: boolean;
+  activatedFullscreen: boolean;
 }
 
 export default class SliderControls extends React.Component<IProps, IState> {
-  componentDidMount(): void {
+  constructor(props: IProps) {
+    super(props)
+    this.state = {
+      isFullscreen: false,
+      // We try to check if the user set fullscreen from the slides control.
+      // If he deed, we need to remember this so we'll get him out of fulscreen when he leaves.
+      // If the user entered fullscreen from OS controls, then we'll leave it there.
+      // Decided this for now so that the user won't get stuck in fullscreen mode in case he doesn't know how to exit.
+      activatedFullscreen: false
+    }
+  }
+
+  async componentDidMount(): Promise<void> {
     document.addEventListener("keydown", this.handleKeyPress);
+    const isFullscreen = await window.funcs.isFullscreen()
+    this.setState({isFullscreen})
+    window.funcs.addFullscreenEventHandler(this.updateFullscreenValue)
   }
 
   componentWillUnmount(): void {
     document.removeEventListener("keydown", this.handleKeyPress);
+    window.funcs.removeFullscreenEventHandler(this.updateFullscreenValue)
+    if(this.state.activatedFullscreen && this.state.isFullscreen)
+      window.funcs.setFullscreen(false);
+  }
+
+  updateFullscreenValue = (isEnabled: boolean): void => {
+    this.setState({ isFullscreen: isEnabled})
+  }
+
+  toggleFullscreen = async (): Promise<void> => {
+    const isFullscreen = await window.funcs.isFullscreen()
+    if(!isFullscreen){
+      if(!this.state.activatedFullscreen) this.setState({activatedFullscreen: true});
+      window.funcs.setFullscreen(true);
+    }
+    else 
+    window.funcs.setFullscreen(false);
   }
 
   handleKeyPress = (e: KeyboardEvent) => {
-    console.log(e);
     e.preventDefault();
 
     switch (e.key) {
@@ -85,6 +115,10 @@ export default class SliderControls extends React.Component<IProps, IState> {
             {/* Next Image */}
             <IconButton aria-label="next" onClick={this.props.onNextImage}>
               <NextIcon />
+            </IconButton>
+            |
+            <IconButton aria-label="fullscreen" onClick={this.toggleFullscreen}>
+              {this.state.isFullscreen ? <FullscreenExit/> : <Fullscreen />}
             </IconButton>
           </div>
         </div>

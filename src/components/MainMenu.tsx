@@ -10,6 +10,7 @@ import {
 import React from "react";
 import DatasetCreation from "./CreateCollection";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { Header } from "./Header";
 import { IntervalSelector } from "./IntervalSelector";
 
@@ -22,6 +23,7 @@ interface IState {
   interval: number;
   datasets: Record<string, string[]>;
   showDatasetCreation: boolean;
+  datasetToEdit?: string;
 }
 
 export default class MainMenu extends React.Component<IProps, IState> {
@@ -51,10 +53,17 @@ export default class MainMenu extends React.Component<IProps, IState> {
   createNewDataset = () => this.setState({ showDatasetCreation: true });
   closeNewDataset = () => this.setState({ showDatasetCreation: false });
   saveDataSet = (name: string, folders: string[]) => {
-    const newDatasets = { ...this.state.datasets, [name]: folders };
+    const newDatasets = { ...this.state.datasets };
+    if (this.state.datasetToEdit && name !== this.state.datasetToEdit) {
+      delete newDatasets[this.state.datasetToEdit];
+    }
+
+    newDatasets[name] = folders;
+
     this.setState({
       datasets: newDatasets,
       showDatasetCreation: false,
+      datasetToEdit: undefined,
     });
 
     this.saveDatasets(newDatasets);
@@ -84,13 +93,16 @@ export default class MainMenu extends React.Component<IProps, IState> {
   };
 
   render() {
+    const showDatasetForm =
+      this.state.showDatasetCreation || this.state.datasetToEdit;
+
     return (
       <>
         <div className="main">
           <div className="main-menu">
             <Header />
             {/* Folder Selection */}
-            {!this.state.folders && !this.state.showDatasetCreation && (
+            {!this.state.folders && !showDatasetForm && (
               <div>
                 <div>
                   <Button
@@ -133,13 +145,22 @@ export default class MainMenu extends React.Component<IProps, IState> {
                             <ListItemText primary={datasetKey} />
                           </ListItemButton>
                           <IconButton
+                            aria-label="edit"
+                            onClick={() =>
+                              this.setState({ datasetToEdit: datasetKey })
+                            }
+                          >
+                            <EditIcon  fontSize="small"/>
+                          </IconButton>
+                          <IconButton
                             aria-label="delete"
                             onClick={() => this.removeDataSet(datasetKey)}
+                            size="small"
                           >
-                            <DeleteIcon />
+                            <DeleteIcon fontSize="small"/>
                           </IconButton>
                         </ListItem>
-                      ),
+                      )
                     )}
                   </List>
                 </div>
@@ -156,16 +177,22 @@ export default class MainMenu extends React.Component<IProps, IState> {
             )}
 
             {/* Create New Collection */}
-            {this.state.showDatasetCreation && (
+            {showDatasetForm && (
               <DatasetCreation
+                datasetToEdit={this.state.datasetToEdit}
                 existingCollections={this.state.datasets}
                 onSave={this.saveDataSet}
-                onCancel={() => this.setState({ showDatasetCreation: false })}
+                onCancel={() =>
+                  this.setState({
+                    showDatasetCreation: false,
+                    datasetToEdit: undefined,
+                  })
+                }
               />
             )}
 
             {/* Interval Selection */}
-            {this.state.folders?.length && !this.state.showDatasetCreation && (
+            {this.state.folders?.length && !showDatasetForm && (
               <IntervalSelector
                 onBack={this.clearFolders}
                 interval={this.state.interval}

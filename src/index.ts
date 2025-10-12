@@ -29,20 +29,9 @@ const createWindow = (): void => {
     },
   });
 
-  ipcMain.handle('loadFolder', async () => dialog.showOpenDialog({ properties: ['openFile', 'multiSelections', 'openDirectory'] }))
+  mainWindow.maximize();
 
-  // ipcMain.handle("loadFolder", (event, arg) => {
-  //   return dialog.showOpenDialog({
-  //     properties: ["openFile"],
-  //     filters: [{ name: "Images", extensions: ["png","jpg","jpeg"] }]
-  //   });
-  
-  //   return result.then(({canceled, filePaths, bookmarks}) => {
-  //     const base64 = fs.readFileSync(filePaths[0]).toString('base64');
-  //     const src = `data:image/jpg;base64,${base64}`
-  //     return src;
-  //   });
-  //  });
+  ipcMain.handle('loadFolder', async () => dialog.showOpenDialog({ properties: ['openFile', 'multiSelections', 'openDirectory'] }))
 
   ipcMain.handle('loadImage', (event, filepath) => {
     return new Promise((resolve, reject) => {
@@ -61,6 +50,16 @@ const createWindow = (): void => {
       .ext(['jpg', 'jpeg', 'png', 'webp'])
       .find()
   });
+
+  ipcMain.handle("isFullscreen", () => mainWindow.fullScreen)
+  ipcMain.handle("setFullscreen", (event, flag: boolean) => mainWindow.setFullScreen(flag))
+
+  mainWindow.on('enter-full-screen', () => {
+    mainWindow.webContents.send('fullscreen-switched', true);
+  })
+  mainWindow.on('leave-full-screen', () => {
+    mainWindow.webContents.send('fullscreen-switched', false);
+  })
 
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
