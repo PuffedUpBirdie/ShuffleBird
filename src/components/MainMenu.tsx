@@ -150,17 +150,17 @@ export default class MainMenu extends React.Component<IProps, IState> {
                               this.setState({ datasetToEdit: datasetKey })
                             }
                           >
-                            <EditIcon  fontSize="small"/>
+                            <EditIcon fontSize="small" />
                           </IconButton>
                           <IconButton
                             aria-label="delete"
                             onClick={() => this.removeDataSet(datasetKey)}
                             size="small"
                           >
-                            <DeleteIcon fontSize="small"/>
+                            <DeleteIcon fontSize="small" />
                           </IconButton>
                         </ListItem>
-                      )
+                      ),
                     )}
                   </List>
                 </div>
@@ -195,8 +195,8 @@ export default class MainMenu extends React.Component<IProps, IState> {
             {this.state.folders?.length && !showDatasetForm && (
               <IntervalSelector
                 onBack={this.clearFolders}
-                interval={this.state.interval}
-                setInterval={this.setInterval}
+                selected_interval={this.state.interval}
+                onSetInterval={this.setInterval}
                 start={this.start}
               />
             )}

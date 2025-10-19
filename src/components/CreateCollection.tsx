@@ -21,10 +21,10 @@ interface IProps {
 
 const NewCollection = (props: IProps) => {
   const [name, setName] = useState(
-    props.datasetToEdit ? props.datasetToEdit : ""
+    props.datasetToEdit ? props.datasetToEdit : "",
   );
   const [folders, setFolders] = useState(
-    props.datasetToEdit ? props.existingCollections[props.datasetToEdit] : []
+    props.datasetToEdit ? props.existingCollections[props.datasetToEdit] : [],
   );
   const [isErrorOpen, setErrorOpen] = useState(false);
 
