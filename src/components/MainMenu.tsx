@@ -15,7 +15,12 @@ import { Header } from "./Header";
 import { IntervalSelector } from "./IntervalSelector";
 
 interface IProps {
-  onDirSelected(filepaths: string[], interval: number): void;
+  onDirSelected(
+    filepaths: string[],
+    interval: number,
+    sessionLimitEnabled: boolean,
+    sessionImageCount: number
+  ): void;
 }
 
 interface IState {
@@ -24,6 +29,8 @@ interface IState {
   datasets: Record<string, string[]>;
   showDatasetCreation: boolean;
   datasetToEdit?: string;
+  sessionLimitEnabled: boolean;
+  sessionImageCount: number;
 }
 
 export default class MainMenu extends React.Component<IProps, IState> {
@@ -38,6 +45,8 @@ export default class MainMenu extends React.Component<IProps, IState> {
       interval: Infinity,
       datasets,
       showDatasetCreation: false,
+      sessionLimitEnabled: false,
+      sessionImageCount: 5,
     };
   }
 
@@ -84,8 +93,13 @@ export default class MainMenu extends React.Component<IProps, IState> {
     this.setState({ interval });
   };
 
-  start = () => {
-    this.props.onDirSelected(this.state.folders, this.state.interval);
+  start = (sessionLimitEnabled: boolean, sessionImageCount: number) => {
+    this.props.onDirSelected(
+      this.state.folders,
+      this.state.interval,
+      sessionLimitEnabled,
+      sessionImageCount
+    );
   };
 
   clearFolders = () => {

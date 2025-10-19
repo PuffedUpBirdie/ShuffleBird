@@ -8,9 +8,12 @@ export class Timer {
   private readonly interval: number;
   private readonly onIntervalReached: () => void;
   private readonly onTickCallback?: (progress: number) => void;
+  private readonly sessionLimit?: number;
+  private readonly onSessionComplete?: () => void;
 
   private intervalInstance: any;
   public timePassed = 0;
+  public imageCount = 0;
 
   /**
    * @param tick
@@ -21,12 +24,18 @@ export class Timer {
    * Function to be called when the given interval was reached
    * @param onTickCallback
    * Function that is called on each tick, receives a number showing the progress towards reaching the interval as a percentage
+   * @param sessionLimit
+   * Optional number of images to show before ending the session
+   * @param onSessionComplete
+   * Optional function to be called when the session limit is reached
    */
   constructor(
     tick: number,
     interval: number,
     onIntervalReached: () => void,
-    onTickCallback?: (progress: number) => void
+    onTickCallback?: (progress: number) => void,
+    sessionLimit?: number,
+    onSessionComplete?: () => void
   ) {
     if (!(tick > 0))
       throw new Error(`Timer received invalid tick value:${tick}`);
@@ -41,6 +50,8 @@ export class Timer {
     this.interval = interval;
     this.onIntervalReached = onIntervalReached;
     this.onTickCallback = onTickCallback;
+    this.sessionLimit = sessionLimit;
+    this.onSessionComplete = onSessionComplete;
   }
 
   start() {
@@ -64,10 +75,20 @@ export class Timer {
     if (this.timePassed > this.interval) {
       this.timePassed = 0;
       this.onIntervalReached();
+
+      // Increment image count and check session limit
+      if (this.sessionLimit && this.onSessionComplete) {
+        this.imageCount++;
+        if (this.imageCount >= this.sessionLimit) {
+          this.pause();
+          this.onSessionComplete();
+          return;
+        }
+      }
     }
-    
-    this.callTick()
- };
+
+    this.callTick();
+  };
 
   reset() {
     this.timePassed = 0;

@@ -20,7 +20,7 @@ interface IProps {
   selected_interval?: number;
   onSetInterval: (interval: number) => void;
   onBack: () => void;
-  start: () => void;
+  start: (sessionLimitEnabled: boolean, sessionImageCount: number) => void;
 }
 
 const intervals = [
@@ -35,11 +35,16 @@ const intervals = [
 ];
 
 export function IntervalSelector(props: IProps) {
+  const settings = getSettings();
   const [showImagePath, setShowImagePath] = useState<boolean>(
-    getSettings().showImagePath,
+    settings.showImagePath,
   );
-  const [useSessionSettings, setUseSessionSettings] = useState<boolean>();
-  const [sessionCount, setSessionCount] = useState(5);
+  const [useSessionSettings, setUseSessionSettings] = useState<boolean>(
+    settings.sessionLimitEnabled ?? false,
+  );
+  const [sessionCount, setSessionCount] = useState(
+    settings.sessionImageCount ?? 10,
+  );
 
   const handleChangeImagePath = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -48,6 +53,21 @@ export function IntervalSelector(props: IProps) {
     const settings = getSettings();
     setSettings({ ...settings, showImagePath });
     setShowImagePath(showImagePath);
+  };
+
+  const handleChangeSessionLimit = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const sessionLimitEnabled = event.target.checked;
+    const settings = getSettings();
+    setSettings({ ...settings, sessionLimitEnabled });
+    setUseSessionSettings(sessionLimitEnabled);
+  };
+
+  const handleSessionCountChange = (count: number) => {
+    const settings = getSettings();
+    setSettings({ ...settings, sessionImageCount: count });
+    setSessionCount(count);
   };
 
   return (
@@ -114,9 +134,7 @@ export function IntervalSelector(props: IProps) {
                   control={
                     <Checkbox
                       checked={useSessionSettings}
-                      onChange={() =>
-                        setUseSessionSettings(!useSessionSettings)
-                      }
+                      onChange={handleChangeSessionLimit}
                     />
                   }
                   label="Session limits"
@@ -127,20 +145,17 @@ export function IntervalSelector(props: IProps) {
                     <AutoButtonGroup
                       choices={[1, 2, 3, 5, 10, 15, 20, 40]}
                       selected={sessionCount}
-                      onSelect={(selected) => {
-                        setSessionCount(selected);
-                        console.log(selected);
-                      }}
+                      onSelect={handleSessionCountChange}
                     />
                     <Input
                       size="small"
                       onChange={(e) => {
                         const value = e.target.value || "";
-                        if (!value) return setSessionCount(0);
+                        if (!value) return handleSessionCountChange(0);
                         const _sessionCount = +value.replace("-", "");
                         !isNaN(_sessionCount) &&
                           _sessionCount > 0 &&
-                          setSessionCount(_sessionCount);
+                          handleSessionCountChange(_sessionCount);
                       }}
                       value={sessionCount}
                       sx={{
@@ -164,7 +179,11 @@ export function IntervalSelector(props: IProps) {
         </Box>
       </div>
       <div>
-        <Button variant="contained" className="wide" onClick={props.start}>
+        <Button
+          variant="contained"
+          className="wide"
+          onClick={() => props.start(useSessionSettings, sessionCount)}
+        >
           Start
         </Button>
       </div>

@@ -11,6 +11,8 @@ interface IProps {
   folders: string[];
   interval: number;
   onStop(): void;
+  sessionLimitEnabled: boolean;
+  sessionImageCount: number;
 }
 
 interface IState {
@@ -49,11 +51,18 @@ export default class ImageSlider extends React.Component<IProps, IState> {
           { files: this.state.files.concat(files), hasLoaded: true },
           () => {
             this.loadRandomImage();
+
+            const sessionLimit = this.props.sessionLimitEnabled
+              ? this.props.sessionImageCount
+              : undefined;
+
             this.timer = new Timer(
               300,
               this.props.interval * 1000,
               this.loadNewImage,
               this.onTick,
+              sessionLimit,
+              this.onSessionComplete
             );
             this.start();
           },
@@ -105,6 +114,12 @@ export default class ImageSlider extends React.Component<IProps, IState> {
 
   stop = () => {
     this.props.onStop();
+  };
+
+  onSessionComplete = () => {
+    console.log("Session limit reached!");
+    // Automatically stop the session when limit is reached
+    this.stop();
   };
 
   render() {
