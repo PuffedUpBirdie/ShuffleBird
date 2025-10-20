@@ -27,14 +27,14 @@ export const AutoButtonGroup = <T extends number | string>({
     aria-label="outlined primary button group"
   >
     {choices.map((value) => {
-      const _value = isNamedValue(value) ? value.value : value;
+      const resolvedValue = isNamedValue(value) ? value.value : value;
       const name = isNamedValue(value) ? value.name : value;
       return (
         <Button
-          key={_value.toString()}
-          color={selected === _value ? "info" : undefined}
+          key={resolvedValue.toString()}
+          color={selected === resolvedValue ? "info" : undefined}
           onClick={() => {
-            onSelect(_value);
+            onSelect(resolvedValue);
           }}
           sx={{ textTransform: "none" }}
         >
