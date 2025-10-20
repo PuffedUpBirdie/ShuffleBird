@@ -95,7 +95,7 @@ export function IntervalSelector(props: IProps) {
             value={
               props.selectedInterval === Infinity
                 ? "-"
-                : (propsselectedIntervall ?? "")
+                : (props.selectedInterval ?? "")
             }
             sx={{
               mx: 1,

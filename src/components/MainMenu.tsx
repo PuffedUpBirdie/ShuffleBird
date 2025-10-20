@@ -19,7 +19,7 @@ interface IProps {
     filepaths: string[],
     interval: number,
     sessionLimitEnabled: boolean,
-    sessionImageCount: number
+    sessionImageCount: number,
   ): void;
 }
 
@@ -98,7 +98,7 @@ export default class MainMenu extends React.Component<IProps, IState> {
       this.state.folders,
       this.state.interval,
       sessionLimitEnabled,
-      sessionImageCount
+      sessionImageCount,
     );
   };
 
@@ -209,7 +209,7 @@ export default class MainMenu extends React.Component<IProps, IState> {
             {this.state.folders?.length && !showDatasetForm && (
               <IntervalSelector
                 onBack={this.clearFolders}
-                selected_interval={this.state.interval}
+                selectedInterval={this.state.interval}
                 onSetInterval={this.setInterval}
                 start={this.start}
               />
