@@ -143,7 +143,14 @@ export function IntervalSelector(props: IProps) {
                   <Box sx={{ marginInline: "20px 0 " }}>
                     <p style={{ color: "gray" }}>number of images</p>
                     <AutoButtonGroup
-                      choices={[1, 2, 3, 5, 10, 15, 20, 40]}
+                      choices={[
+                        { name: "No Limit", value: 0 },
+                        5,
+                        10,
+                        15,
+                        20,
+                        40,
+                      ]}
                       selected={sessionCount}
                       onSelect={handleSessionCountChange}
                     />
