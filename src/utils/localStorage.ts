@@ -1,7 +1,5 @@
 interface ISettings {
   showImagePath?: boolean;
-  sessionLimitEnabled?: boolean;
-  sessionImageCount?: number;
 }
 
 export const getSettings = (): ISettings => {

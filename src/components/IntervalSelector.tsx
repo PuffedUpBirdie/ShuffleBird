@@ -39,9 +39,7 @@ export function IntervalSelector(props: IProps) {
   const [showImagePath, setShowImagePath] = useState<boolean>(
     settings.showImagePath
   );
-  const [sessionCount, setSessionCount] = useState(
-    settings.sessionImageCount ?? 10
-  );
+  const [sessionCount, setSessionCount] = useState(0);
 
   const handleChangeImagePath = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -52,17 +50,7 @@ export function IntervalSelector(props: IProps) {
     setShowImagePath(showImagePath);
   };
 
-  const handleChangeSessionLimit = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const sessionLimitEnabled = event.target.checked;
-    const settings = getSettings();
-    setSettings({ ...settings, sessionLimitEnabled });
-  };
-
   const handleSessionCountChange = (count: number) => {
-    const settings = getSettings();
-    setSettings({ ...settings, sessionImageCount: count });
     setSessionCount(count);
   };
 
@@ -163,7 +151,7 @@ export function IntervalSelector(props: IProps) {
       </div>
       <div>
         <Box mb={1}>
-          <Accordion elevation={0} disableGutters>
+          <Accordion>
             <AccordionSummary expandIcon={<ArrowDropDown />}>
               extra settings
             </AccordionSummary>
