@@ -16,7 +16,7 @@ import { getSettings, setSettings } from "../utils/localStorage";
 import { AutoButtonGroup } from "./ButtonGroup";
 
 interface IProps {
-  selected_interval?: number;
+  selectedInterval?: number;
   onSetInterval: (interval: number) => void;
   onBack: () => void;
   start: (sessionLimitEnabled: boolean, sessionImageCount: number) => void;
@@ -81,7 +81,7 @@ export function IntervalSelector(props: IProps) {
         <Box my={1}>
           <AutoButtonGroup
             choices={intervals}
-            selected={props.selected_interval}
+            selected={props.selectedInterval}
             onSelect={props.onSetInterval}
           />
           <Input
@@ -93,9 +93,9 @@ export function IntervalSelector(props: IProps) {
               !isNaN(interval) && interval > 0 && props.onSetInterval(interval);
             }}
             value={
-              props.selected_interval === Infinity
+              props.selectedInterval === Infinity
                 ? "-"
-                : (props.selected_interval ?? "")
+                : (propsselectedIntervall ?? "")
             }
             sx={{
               mx: 1,
@@ -111,7 +111,7 @@ export function IntervalSelector(props: IProps) {
         <Box mb={1}>
           <Accordion>
             <AccordionSummary expandIcon={<ArrowDropDown />}>
-              extra settings
+              Additional settings
             </AccordionSummary>
             <AccordionDetails sx={{ marginInline: "20px 0" }}>
               <FormGroup>
@@ -131,11 +131,11 @@ export function IntervalSelector(props: IProps) {
                       onChange={handleChangeSessionLimit}
                     />
                   }
-                  label="Session limit"
+                  label="Session limits"
                 />
                 {useSession && (
                   <Box sx={{ marginInline: "20px 0 " }}>
-                    <p style={{ color: "gray" }}>number of images</p>
+                    <p style={{ color: "gray" }}>Number of images</p>
                     <AutoButtonGroup
                       choices={[
                         { name: "No Limit", value: 0 },
@@ -153,10 +153,10 @@ export function IntervalSelector(props: IProps) {
                       onChange={(e) => {
                         const value = e.target.value || "";
                         if (!value) return handleSessionCountChange(0);
-                        const _sessionCount = +value.replace("-", "");
-                        !isNaN(_sessionCount) &&
-                          _sessionCount > 0 &&
-                          handleSessionCountChange(_sessionCount);
+                        const sessionCount = +value.replace("-", "");
+                        !isNaN(sessionCount) &&
+                          sessionCount > 0 &&
+                          handleSessionCountChange(sessionCount);
                       }}
                       value={sessionCount}
                       sx={{
@@ -167,9 +167,20 @@ export function IntervalSelector(props: IProps) {
                         },
                       }}
                     ></Input>
-                    <p style={{ color: "gray" }}>
-                      session time: ~
-                      {Math.ceil((props.selected_interval * sessionCount) / 60)}{" "}
+                    <p
+                      style={{
+                        color: "gray",
+                        visibility:
+                          props.selectedInterval != null &&
+                          props.selectedInterval !== Infinity &&
+                          props.selectedInterval > 0 &&
+                          sessionCount > 0
+                            ? "visible"
+                            : "hidden",
+                      }}
+                    >
+                      Session time: ~
+                      {Math.ceil((props.selectedInterval * sessionCount) / 60)}{" "}
                       min
                     </p>
                   </Box>
