@@ -1,21 +1,23 @@
 import { Button, ButtonGroup as MuiButtonGroup } from "@mui/material";
 
-type Props<T> = {
-  choices: Array<T>;
-  selected: T;
-  onSelect: (selected: T) => void;
-};
-
 type NamedValue<T> = {
   name: string;
   value: T;
+};
+
+type Choice<T> = T | NamedValue<T>;
+
+type Props<T extends number | string> = {
+  choices: Array<Choice<T>>;
+  selected: T;
+  onSelect: (selected: T) => void;
 };
 
 function isNamedValue<T>(value: any): value is NamedValue<T> {
   return value && typeof value.name === "string" && value.value !== undefined;
 }
 
-export const AutoButtonGroup = <T extends (number | string) | NamedValue<T>>({
+export const AutoButtonGroup = <T extends number | string>({
   choices,
   selected,
   onSelect,
@@ -34,6 +36,7 @@ export const AutoButtonGroup = <T extends (number | string) | NamedValue<T>>({
           onClick={() => {
             onSelect(_value);
           }}
+          sx={{ textTransform: "none" }}
         >
           {name.toString()}
         </Button>
