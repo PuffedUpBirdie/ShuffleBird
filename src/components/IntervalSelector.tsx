@@ -39,7 +39,7 @@ export function IntervalSelector(props: IProps) {
     settings.showImagePath,
   );
   const [useSession, setUseSession] = useState<boolean>(false);
-  const [sessionCount, setSessionCount] = useState(10);
+  const [sessionCount, setSessionCount] = useState(0);
 
   const handleChangeImagePath = (
     event: React.ChangeEvent<HTMLInputElement>,
