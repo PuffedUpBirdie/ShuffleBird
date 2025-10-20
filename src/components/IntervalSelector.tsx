@@ -24,8 +24,8 @@ interface IProps {
 
 const intervals = [
   { name: "No Interval", value: Infinity },
-  10,
-  30,
+  { name: "10s", value: 10 },
+  { name: "30s", value: 30 },
   { name: "1m", value: 60 },
   { name: "2m", value: 120 },
   { name: "3m", value: 180 },
@@ -139,11 +139,11 @@ export function IntervalSelector(props: IProps) {
                     <AutoButtonGroup
                       choices={[
                         { name: "No Limit", value: 0 },
-                        5,
-                        10,
-                        15,
-                        20,
-                        40,
+                        { name: "5", value: 5 },
+                        { name: "10", value: 10 },
+                        { name: "15", value: 15 },
+                        { name: "20", value: 20 },
+                        { name: "40", value: 40 },
                       ]}
                       selected={sessionCount}
                       onSelect={handleSessionCountChange}

@@ -5,17 +5,11 @@ type NamedValue<T> = {
   value: T;
 };
 
-type Choice<T> = T | NamedValue<T>;
-
 type Props<T extends number | string> = {
-  choices: Array<Choice<T>>;
+  choices: Array<NamedValue<T>>;
   selected: T;
   onSelect: (selected: T) => void;
 };
-
-function isNamedValue<T>(value: any): value is NamedValue<T> {
-  return value && typeof value.name === "string" && value.value !== undefined;
-}
 
 export const AutoButtonGroup = <T extends number | string>({
   choices,
@@ -26,19 +20,19 @@ export const AutoButtonGroup = <T extends number | string>({
     variant="contained"
     aria-label="outlined primary button group"
   >
-    {choices.map((value) => {
-      const resolvedValue = isNamedValue(value) ? value.value : value;
-      const name = isNamedValue(value) ? value.name : value;
+    {choices.map((namedValue) => {
+      const value = namedValue.value;
+      const name = namedValue.name;
       return (
         <Button
-          key={resolvedValue.toString()}
-          color={selected === resolvedValue ? "info" : undefined}
+          key={value}
+          color={selected === value ? "info" : undefined}
           onClick={() => {
-            onSelect(resolvedValue);
+            onSelect(value);
           }}
           sx={{ textTransform: "none" }}
         >
-          {name.toString()}
+          {name}
         </Button>
       );
     })}
