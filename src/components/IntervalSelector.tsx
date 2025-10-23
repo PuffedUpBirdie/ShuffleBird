@@ -38,7 +38,6 @@ export function IntervalSelector(props: IProps) {
   const [showImagePath, setShowImagePath] = useState<boolean>(
     settings.showImagePath,
   );
-  const [useSession, setUseSession] = useState<boolean>(false);
   const [sessionCount, setSessionCount] = useState(0);
 
   const handleChangeImagePath = (
@@ -48,12 +47,6 @@ export function IntervalSelector(props: IProps) {
     const settings = getSettings();
     setSettings({ ...settings, showImagePath });
     setShowImagePath(showImagePath);
-  };
-
-  const handleChangeSessionLimit = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setUseSession(event.target.checked);
   };
 
   const handleSessionCountChange = (count: number) => {
@@ -124,67 +117,56 @@ export function IntervalSelector(props: IProps) {
                   }
                   label="Show image path"
                 />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={useSession}
-                      onChange={handleChangeSessionLimit}
-                    />
-                  }
-                  label="Session limits"
-                />
-                {useSession && (
-                  <Box sx={{ marginInline: "20px 0 " }}>
-                    <p style={{ color: "gray" }}>Number of images</p>
-                    <AutoButtonGroup
-                      choices={[
-                        { name: "No Limit", value: 0 },
-                        { name: "5", value: 5 },
-                        { name: "10", value: 10 },
-                        { name: "15", value: 15 },
-                        { name: "20", value: 20 },
-                        { name: "40", value: 40 },
-                      ]}
-                      selected={sessionCount}
-                      onSelect={handleSessionCountChange}
-                    />
-                    <Input
-                      size="small"
-                      onChange={(e) => {
-                        const value = e.target.value || "";
-                        if (!value) return handleSessionCountChange(0);
-                        const sessionCount = +value.replace("-", "");
-                        !isNaN(sessionCount) &&
-                          sessionCount > 0 &&
-                          handleSessionCountChange(sessionCount);
-                      }}
-                      value={sessionCount}
-                      sx={{
-                        mx: 1,
-                        maxWidth: "5rem",
-                        input: {
-                          textAlign: "center",
-                        },
-                      }}
-                    ></Input>
-                    <p
-                      style={{
-                        color: "gray",
-                        visibility:
-                          props.selectedInterval != null &&
-                          props.selectedInterval !== Infinity &&
-                          props.selectedInterval > 0 &&
-                          sessionCount > 0
-                            ? "visible"
-                            : "hidden",
-                      }}
-                    >
-                      Session time: ~
-                      {Math.ceil((props.selectedInterval * sessionCount) / 60)}{" "}
-                      min
-                    </p>
-                  </Box>
-                )}
+                <Box>
+                  <p style={{ color: "gray" }}>Number of images</p>
+                  <AutoButtonGroup
+                    choices={[
+                      { name: "No Limit", value: 0 },
+                      { name: "5", value: 5 },
+                      { name: "10", value: 10 },
+                      { name: "15", value: 15 },
+                      { name: "20", value: 20 },
+                      { name: "40", value: 40 },
+                    ]}
+                    selected={sessionCount}
+                    onSelect={handleSessionCountChange}
+                  />
+                  <Input
+                    size="small"
+                    onChange={(e) => {
+                      const value = e.target.value || "";
+                      if (!value) return handleSessionCountChange(0);
+                      const sessionCount = +value.replace("-", "");
+                      !isNaN(sessionCount) &&
+                        sessionCount > 0 &&
+                        handleSessionCountChange(sessionCount);
+                    }}
+                    value={sessionCount}
+                    sx={{
+                      mx: 1,
+                      maxWidth: "5rem",
+                      input: {
+                        textAlign: "center",
+                      },
+                    }}
+                  ></Input>
+                  <p
+                    style={{
+                      color: "gray",
+                      visibility:
+                        props.selectedInterval != null &&
+                        props.selectedInterval !== Infinity &&
+                        props.selectedInterval > 0 &&
+                        sessionCount > 0
+                          ? "visible"
+                          : "hidden",
+                    }}
+                  >
+                    Session time: ~
+                    {Math.ceil((props.selectedInterval * sessionCount) / 60)}{" "}
+                    min
+                  </p>
+                </Box>
               </FormGroup>
             </AccordionDetails>
           </Accordion>
@@ -194,7 +176,7 @@ export function IntervalSelector(props: IProps) {
         <Button
           variant="contained"
           className="wide"
-          onClick={() => props.start(useSession, sessionCount)}
+          onClick={() => props.start(true, sessionCount)}
         >
           Start
         </Button>
