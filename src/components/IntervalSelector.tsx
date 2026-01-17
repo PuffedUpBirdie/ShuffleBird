@@ -8,6 +8,7 @@ import {
   FormControlLabel,
   FormGroup,
   Input,
+  Slider,
 } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
@@ -24,29 +25,49 @@ interface IProps {
 
 const intervals = [
   { name: "No Interval", value: Infinity },
-  { name: "10s", value: 10 },
   { name: "30s", value: 30 },
   { name: "1m", value: 60 },
   { name: "2m", value: 120 },
   { name: "3m", value: 180 },
-  { name: "4m", value: 240 },
   { name: "5m", value: 300 },
 ];
+
+const formatContrastMultiplierText = (value: number) =>
+  value === 1 ? "Off" : `x${value}`;
 
 export function IntervalSelector(props: IProps) {
   const settings = getSettings();
   const [showImagePath, setShowImagePath] = useState<boolean>(
     settings.showImagePath,
   );
+  const [showImmersiveBackground, setShowImmersiveBackground] =
+    useState<boolean>(settings.showImmersiveBackground);
+  const [contrastMultiplier, setContrastMultiplier] = useState(
+    settings.contrastMultiplier ?? 1,
+  );
   const [sessionCount, setSessionCount] = useState(0);
 
-  const handleChangeImagePath = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const toggleShowImagePath = (event: React.ChangeEvent<HTMLInputElement>) => {
     const showImagePath = event.target.checked;
     const settings = getSettings();
     setSettings({ ...settings, showImagePath });
     setShowImagePath(showImagePath);
+  };
+
+  const toggleShowImmersiveBackground = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const showImmersiveBackground = event.target.checked;
+    const settings = getSettings();
+    setSettings({ ...settings, showImmersiveBackground });
+    setShowImmersiveBackground(showImmersiveBackground);
+  };
+
+  const changeContrastMultiplier = (_: Event, value: number) => {
+    const contrastMultiplier = value > 1 ? value : undefined;
+    const settings = getSettings();
+    setSettings({ ...settings, contrastMultiplier });
+    setContrastMultiplier(contrastMultiplier);
   };
 
   const handleSessionCountChange = (count: number) => {
@@ -108,17 +129,31 @@ export function IntervalSelector(props: IProps) {
             </AccordionSummary>
             <AccordionDetails sx={{ marginInline: "20px 0" }}>
               <FormGroup>
+                {/* Show Image Paths */}
                 <FormControlLabel
                   control={
                     <Checkbox
                       checked={showImagePath}
-                      onChange={handleChangeImagePath}
+                      onChange={toggleShowImagePath}
                     />
                   }
                   label="Show image path"
                 />
+
+                {/* Show Immersive Background */}
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={showImmersiveBackground}
+                      onChange={toggleShowImmersiveBackground}
+                    />
+                  }
+                  label="Immersive background"
+                />
+
+                {/* Sellect session limit */}
                 <Box>
-                  <p style={{ color: "gray" }}>Number of images</p>
+                  <p>Number of images</p>
                   <AutoButtonGroup
                     choices={[
                       { name: "No Limit", value: 0 },
@@ -166,6 +201,23 @@ export function IntervalSelector(props: IProps) {
                     {Math.ceil((props.selectedInterval * sessionCount) / 60)}{" "}
                     min
                   </p>
+                </Box>
+
+                {/* Contrast multiplier */}
+                <p>Contrast multiplier</p>
+                <Box px={1}>
+                  <Slider
+                    aria-label="Contrast multiplier"
+                    defaultValue={contrastMultiplier}
+                    getAriaValueText={formatContrastMultiplierText}
+                    valueLabelFormat={formatContrastMultiplierText}
+                    step={0.05}
+                    marks
+                    min={1}
+                    max={1.3}
+                    valueLabelDisplay="auto"
+                    onChange={changeContrastMultiplier}
+                  />
                 </Box>
               </FormGroup>
             </AccordionDetails>

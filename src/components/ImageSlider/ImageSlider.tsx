@@ -62,7 +62,7 @@ export default class ImageSlider extends React.Component<IProps, IState> {
               this.loadNewImage,
               this.onTick,
               sessionLimit,
-              this.onSessionComplete
+              this.onSessionComplete,
             );
             this.start();
           },
@@ -131,8 +131,21 @@ export default class ImageSlider extends React.Component<IProps, IState> {
               <ImagePathContainer filename={this.state.filename} />
             )}
 
+            {this.settings.showImmersiveBackground && (
+              <img id="immersive-bg" src={this.state.src} />
+            )}
+
             <div id="image-container">
-              {this.state.src && <img src={this.state.src} />}
+              {this.state.src && (
+                <img
+                  src={this.state.src}
+                  style={
+                    this.settings.contrastMultiplier && {
+                      filter: `contrast(${this.settings.contrastMultiplier})`,
+                    }
+                  }
+                />
+              )}
             </div>
 
             <SliderControls

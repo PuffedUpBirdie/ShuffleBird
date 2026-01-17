@@ -1,6 +1,13 @@
 body {
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif;
+  font-family:
+    "Roboto",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
   display: flow-root;
   margin: auto;
   padding: 0;
@@ -51,20 +58,29 @@ body {
   padding: 4px 6px;
   background: black;
   border-radius: 3px;
-  opacity: .4;
-  font-size: .8rem;
+  opacity: 0.4;
+  font-size: 0.8rem;
   word-break: break-all;
-  transition: opacity .5s;
+  transition: opacity 0.5s;
 }
 
 @media (min-width: 1200px) {
   .image-slider-area #filename-container {
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 }
 
 .image-slider-area #filename-container:hover {
   opacity: 1;
+}
+
+.image-slider-area #immersive-bg {
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(28px);
 }
 
 .image-slider-area #image-container {
@@ -89,7 +105,7 @@ body {
   bottom: 0;
   left: 50%;
   transform: translate(-50%, 0);
-  opacity: .6;
+  opacity: 0.6;
   width: 80vw;
 }
 
@@ -98,10 +114,10 @@ body {
 }
 
 .image-controls .button-container {
-  background-color: rgb(0, 0, 0, .7);
+  background-color: rgb(0, 0, 0, 0.7);
   border-radius: 4px;
 }
 
-.dataset-creation-form>* {
+.dataset-creation-form > * {
   margin-bottom: 0.5rem !important;
 }
