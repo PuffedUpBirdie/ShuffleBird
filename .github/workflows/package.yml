@@ -1,0 +1,35 @@
+name: Windows package
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    # This creates a grid of runs
+    strategy:
+      matrix:
+        os: [windows-latest]
+    
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run build
+      run: npm run make
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        # We include the OS name in the artifact to distinguish them
+        name: build-output-${{ matrix.os }}
+        path: out/
