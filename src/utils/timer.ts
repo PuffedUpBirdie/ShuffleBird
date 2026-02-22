@@ -79,7 +79,7 @@ export class Timer {
       // Increment image count and check session limit
       if (this.sessionLimit && this.onSessionComplete) {
         this.imageCount++;
-        if (this.imageCount >= this.sessionLimit) {
+        if (this.imageCount === this.sessionLimit) {
           this.pause();
           this.onSessionComplete();
           return;

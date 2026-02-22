@@ -6,6 +6,7 @@ import SliderControls from "./SliderControls";
 import Loader from "./Loader";
 import { getSettings } from "../../utils/localStorage";
 import { ImagePathContainer } from "./ImagePathContainer";
+import StopDialog from "./StopDialog";
 
 interface IProps {
   folders: string[];
@@ -22,6 +23,9 @@ interface IState {
   progress: number;
   isPaused: boolean;
   hasLoaded: boolean;
+  isClosingModalOpen: boolean;
+  isSessionComplete: boolean;
+  sessionProgress?: { count: number; sampleImages: [string, string][] };
 }
 
 export default class ImageSlider extends React.Component<IProps, IState> {
@@ -39,6 +43,9 @@ export default class ImageSlider extends React.Component<IProps, IState> {
       progress: 0,
       isPaused: false,
       hasLoaded: false,
+      isClosingModalOpen: false,
+      isSessionComplete: false,
+      sessionProgress: undefined,
     };
   }
 
@@ -76,21 +83,27 @@ export default class ImageSlider extends React.Component<IProps, IState> {
   }
 
   loadNewImage = () => {
-    console.log("load new image");
     this.loadRandomImage();
   };
 
   onTick = (progress: number) => this.setState({ progress });
 
   loadRandomImage() {
-    this.imageLoader
-      .forward()
-      .then(({ filename, src }) => this.setState({ filename, src }));
+    this.imageLoader.forward().then(({ filename, src }) => {
+      this.setState(() => ({
+        filename,
+        src,
+      }));
+    });
   }
 
   start = () => {
     this.timer.start();
-    this.setState({ isPaused: false });
+    this.setState({
+      isPaused: false,
+      isClosingModalOpen: false,
+      sessionProgress: undefined,
+    });
   };
 
   previousImage = () => {
@@ -113,57 +126,87 @@ export default class ImageSlider extends React.Component<IProps, IState> {
   };
 
   stop = () => {
-    this.props.onStop();
+    if (this.state.isClosingModalOpen) this.props.onStop();
+    else {
+      this.setState({
+        isClosingModalOpen: true,
+        isPaused: true,
+        isSessionComplete: false,
+      });
+      this.timer.pause();
+    }
   };
 
   onSessionComplete = () => {
     console.log("Session limit reached!");
-    // Automatically stop the session when limit is reached
+    // Mark as session complete and show the dialog
     this.stop();
+    this.setState({
+      isSessionComplete: true,
+      sessionProgress: this.imageLoader.getProgress(),
+    });
   };
 
   render() {
     return (
-      <div className="image-slider-area">
-        {this.state.hasLoaded ? (
-          <>
-            {this.settings.showImagePath && (
-              <ImagePathContainer filename={this.state.filename} />
-            )}
-
-            {this.settings.showImmersiveBackground && (
-              <img id="immersive-bg" src={this.state.src} />
-            )}
-
-            <div id="image-container">
-              {this.state.src && (
-                <img
-                  src={this.state.src}
-                  style={
-                    this.settings.contrastMultiplier && {
-                      filter: `contrast(${this.settings.contrastMultiplier})`,
-                    }
-                  }
-                />
+      <>
+        <div className="image-slider-area">
+          {this.state.hasLoaded ? (
+            <>
+              {this.settings.showImagePath && (
+                <ImagePathContainer filename={this.state.filename} />
               )}
-            </div>
 
-            <SliderControls
-              onStart={this.start}
-              onNextImage={this.nextImage}
-              onPreviousImage={this.previousImage}
-              onPause={this.pause}
-              onStop={this.stop}
-              progress={this.state.progress}
-              isPaused={this.state.isPaused}
-              hideProgressBar={this.props.interval === Infinity}
-            />
-            <div className="progress-bar"></div>
-          </>
-        ) : (
-          <Loader />
-        )}
-      </div>
+              {this.settings.showImmersiveBackground && (
+                <img id="immersive-bg" src={this.state.src} />
+              )}
+
+              <div id="image-container">
+                {this.state.src && (
+                  <img
+                    src={this.state.src}
+                    style={
+                      this.settings.contrastMultiplier && {
+                        filter: `contrast(${this.settings.contrastMultiplier})`,
+                      }
+                    }
+                  />
+                )}
+              </div>
+
+              <SliderControls
+                onStart={this.start}
+                onNextImage={this.nextImage}
+                onPreviousImage={this.previousImage}
+                onPause={this.pause}
+                onStop={this.stop}
+                progress={this.state.progress}
+                isPaused={this.state.isPaused}
+                hideProgressBar={this.props.interval === Infinity}
+                isDialogOpen={this.state.isClosingModalOpen}
+              />
+              <div className="progress-bar"></div>
+            </>
+          ) : (
+            <Loader />
+          )}
+        </div>
+        <StopDialog
+          isOpen={this.state.isClosingModalOpen}
+          onClose={() =>
+            this.setState({
+              isClosingModalOpen: false,
+              isSessionComplete: false,
+              sessionProgress: undefined,
+            })
+          }
+          onExit={this.props.onStop}
+          onResume={this.start}
+          isSessionComplete={this.state.isSessionComplete}
+          imageSamples={this.state.sessionProgress?.sampleImages}
+          viewedImagesCount={this.state.sessionProgress?.count}
+        />
+      </>
     );
   }
 }
