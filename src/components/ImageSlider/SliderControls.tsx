@@ -12,7 +12,8 @@ interface IProps {
   progress: number;
   isPaused: boolean;
   hideProgressBar?: boolean;
-  isDialogOpen?: boolean;
+  isDisabled?: boolean;
+  isPlayPauseDisabled?: boolean;
   onStart(): void;
   onPreviousImage(): void;
   onNextImage(): void;
@@ -67,7 +68,7 @@ export default class SliderControls extends React.Component<IProps, IState> {
 
   handleKeyPress = (e: KeyboardEvent) => {
     // Disable keyboard controls when dialog is open
-    if (this.props.isDialogOpen) return;
+    if (this.props.isDisabled) return;
 
     e.preventDefault();
 
@@ -96,26 +97,26 @@ export default class SliderControls extends React.Component<IProps, IState> {
             <IconButton
               aria-label="previous"
               onClick={this.props.onPreviousImage}
-              disabled={this.props.isDialogOpen}
+              disabled={this.props.isDisabled}
             >
               <PreviousIcon />
             </IconButton>
             {/* Play */}
-            {this.props.isPaused && (
+            {!this.props.isPlayPauseDisabled && this.props.isPaused && (
               <IconButton
                 aria-label="play"
                 onClick={this.props.onStart}
-                disabled={this.props.isDialogOpen}
+                disabled={this.props.isDisabled}
               >
                 <PlayIcon />
               </IconButton>
             )}
             {/* Pause */}
-            {!this.props.isPaused && (
+            {!this.props.isPlayPauseDisabled && !this.props.isPaused && (
               <IconButton
                 aria-label="pause"
                 onClick={this.props.onPause}
-                disabled={this.props.isDialogOpen}
+                disabled={this.props.isDisabled}
               >
                 <PauseIcon />
               </IconButton>
@@ -124,7 +125,7 @@ export default class SliderControls extends React.Component<IProps, IState> {
             <IconButton
               aria-label="stop"
               onClick={this.props.onStop}
-              disabled={this.props.isDialogOpen}
+              disabled={this.props.isDisabled}
             >
               <StopIcon />
             </IconButton>
@@ -132,7 +133,7 @@ export default class SliderControls extends React.Component<IProps, IState> {
             <IconButton
               aria-label="next"
               onClick={this.props.onNextImage}
-              disabled={this.props.isDialogOpen}
+              disabled={this.props.isDisabled}
             >
               <NextIcon />
             </IconButton>
@@ -140,7 +141,7 @@ export default class SliderControls extends React.Component<IProps, IState> {
             <IconButton
               aria-label="fullscreen"
               onClick={this.toggleFullscreen}
-              disabled={this.props.isDialogOpen}
+              disabled={this.props.isDisabled}
             >
               {this.state.isFullscreen ? <FullscreenExit /> : <Fullscreen />}
             </IconButton>

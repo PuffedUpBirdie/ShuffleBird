@@ -29,7 +29,7 @@ interface IState {
 }
 
 export default class ImageSlider extends React.Component<IProps, IState> {
-  timer: Timer;
+  timer: Timer | null;
   imageLoader: ImageLoader;
   settings = getSettings();
 
@@ -63,14 +63,17 @@ export default class ImageSlider extends React.Component<IProps, IState> {
               ? this.props.sessionImageCount
               : undefined;
 
-            this.timer = new Timer(
-              300,
-              this.props.interval * 1000,
-              this.loadNewImage,
-              this.onTick,
-              sessionLimit,
-              this.onSessionComplete,
-            );
+            this.timer =
+              this.props.interval !== Infinity
+                ? new Timer(
+                    300,
+                    this.props.interval * 1000,
+                    this.loadNewImage,
+                    this.onTick,
+                    sessionLimit,
+                    this.onSessionComplete,
+                  )
+                : null;
             this.start();
           },
         );
@@ -79,7 +82,7 @@ export default class ImageSlider extends React.Component<IProps, IState> {
   }
 
   componentWillUnmount(): void {
-    this.timer.release();
+     this.timer?.release();
   }
 
   loadNewImage = () => {
@@ -98,7 +101,7 @@ export default class ImageSlider extends React.Component<IProps, IState> {
   }
 
   start = () => {
-    this.timer.start();
+     this.timer?.start();
     this.setState({
       isPaused: false,
       isClosingModalOpen: false,
@@ -112,16 +115,16 @@ export default class ImageSlider extends React.Component<IProps, IState> {
       const { filename, src } = result;
       this.setState({ filename, src });
     });
-    this.timer.reset();
+     this.timer?.reset();
   };
 
   nextImage = () => {
     this.loadRandomImage();
-    this.timer.reset();
+     this.timer?.reset();
   };
 
   pause = () => {
-    this.timer.pause();
+     this.timer?.pause();
     this.setState({ isPaused: true });
   };
 
@@ -133,7 +136,7 @@ export default class ImageSlider extends React.Component<IProps, IState> {
         isPaused: true,
         isSessionComplete: false,
       });
-      this.timer.pause();
+       this.timer?.pause();
     }
   };
 
@@ -183,7 +186,8 @@ export default class ImageSlider extends React.Component<IProps, IState> {
                 progress={this.state.progress}
                 isPaused={this.state.isPaused}
                 hideProgressBar={this.props.interval === Infinity}
-                isDialogOpen={this.state.isClosingModalOpen}
+                isDisabled={this.state.isClosingModalOpen}
+                isPlayPauseDisabled={this.props.interval === Infinity}
               />
               <div className="progress-bar"></div>
             </>
