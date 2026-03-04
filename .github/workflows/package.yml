@@ -33,3 +33,4 @@ jobs:
         # We include the OS name in the artifact to distinguish them
         name: build-output-${{ matrix.os }}
         path: out/
+        include-hidden-files: true
