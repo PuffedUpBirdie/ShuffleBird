@@ -26,6 +26,7 @@ const createWindow = (): void => {
     autoHideMenuBar: true,
     backgroundColor: "#0a1929",
     webPreferences: {
+      backgroundThrottling: false,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
