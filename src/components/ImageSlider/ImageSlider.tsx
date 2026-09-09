@@ -66,7 +66,7 @@ export default class ImageSlider extends React.Component<IProps, IState> {
             this.timer =
               this.props.interval !== Infinity
                 ? new Timer(
-                    300,
+                    100,
                     this.props.interval * 1000,
                     this.loadNewImage,
                     this.onTick,
