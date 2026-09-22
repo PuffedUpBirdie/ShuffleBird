@@ -2,6 +2,7 @@ interface ISettings {
   showImagePath?: boolean;
   showImmersiveBackground?: boolean;
   contrastMultiplier?: number;
+  interval?: number;
 }
 
 export const getSettings = (): ISettings => {

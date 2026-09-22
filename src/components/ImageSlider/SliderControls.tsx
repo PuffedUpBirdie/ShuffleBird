@@ -8,6 +8,8 @@ import Fullscreen from "@mui/icons-material/Fullscreen";
 import FullscreenExit from "@mui/icons-material/FullscreenExit";
 import React from "react";
 
+const CONTROLS_HIDE_DELAY = 3000;
+
 interface IProps {
   progress: number;
   isPaused: boolean;
@@ -24,13 +26,17 @@ interface IProps {
 interface IState {
   isFullscreen: boolean;
   activatedFullscreen: boolean;
+  controlsHidden: boolean;
 }
 
 export default class SliderControls extends React.Component<IProps, IState> {
+  hideTimer?: number;
+
   constructor(props: IProps) {
     super(props);
     this.state = {
       isFullscreen: false,
+      controlsHidden: false,
       // We try to check if the user set fullscreen from the slides control.
       // If he did, we need to remember this so we'll get him out of fulscreen when he leaves.
       // If the user entered fullscreen from OS controls, then we'll leave it there.
@@ -41,17 +47,51 @@ export default class SliderControls extends React.Component<IProps, IState> {
 
   async componentDidMount(): Promise<void> {
     document.addEventListener("keydown", this.handleKeyPress);
+    document.addEventListener("mousemove", this.handleMouseMove);
+    this.scheduleHide();
     const isFullscreen = await window.funcs.isFullscreen();
     this.setState({ isFullscreen });
     window.funcs.addFullscreenEventHandler(this.updateFullscreenValue);
   }
 
+  componentDidUpdate(prevProps: IProps): void {
+    const wasPlaying = !prevProps.isPaused && !prevProps.isDisabled;
+    const isPlaying = !this.props.isPaused && !this.props.isDisabled;
+    if (wasPlaying === isPlaying) return;
+
+    if (isPlaying) this.scheduleHide();
+    else {
+      if (this.hideTimer) window.clearTimeout(this.hideTimer);
+      this.revealControls();
+    }
+  }
+
   componentWillUnmount(): void {
     document.removeEventListener("keydown", this.handleKeyPress);
+    document.removeEventListener("mousemove", this.handleMouseMove);
+    if (this.hideTimer) window.clearTimeout(this.hideTimer);
     window.funcs.removeFullscreenEventHandler(this.updateFullscreenValue);
     if (this.state.activatedFullscreen && this.state.isFullscreen)
       window.funcs.setFullscreen(false);
   }
+
+  scheduleHide = (): void => {
+    if (this.hideTimer) window.clearTimeout(this.hideTimer);
+    if (this.props.isPaused || this.props.isDisabled) return;
+    this.hideTimer = window.setTimeout(
+      () => this.setState({ controlsHidden: true }),
+      CONTROLS_HIDE_DELAY,
+    );
+  };
+
+  revealControls = (): void => {
+    if (this.state.controlsHidden) this.setState({ controlsHidden: false });
+  };
+
+  handleMouseMove = (): void => {
+    this.revealControls();
+    this.scheduleHide();
+  };
 
   updateFullscreenValue = (isEnabled: boolean): void => {
     this.setState({ isFullscreen: isEnabled });
@@ -89,7 +129,18 @@ export default class SliderControls extends React.Component<IProps, IState> {
   };
 
   render = () => (
-    <div className="image-controls">
+    <div
+      className="image-controls"
+      style={
+        this.state.controlsHidden
+          ? {
+              transition: "opacity 0.3s ease",
+              opacity: 0,
+              pointerEvents: "none",
+            }
+          : { transition: "opacity 0.3s ease" }
+      }
+    >
       <Box my={1}>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div className="button-container">

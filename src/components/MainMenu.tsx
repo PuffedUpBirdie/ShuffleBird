@@ -13,6 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Header } from "./Header";
 import { IntervalSelector } from "./IntervalSelector";
+import { getSettings, setSettings } from "../utils/localStorage";
 
 interface IProps {
   onDirSelected(
@@ -40,9 +41,13 @@ export default class MainMenu extends React.Component<IProps, IState> {
     const localData = localStorage.getItem("datasets");
     const datasets = localData ? JSON.parse(localData) : {};
 
+    const settings = getSettings();
+    const savedInterval =
+      settings.interval == null ? Infinity : settings.interval;
+
     this.state = {
       folders: null,
-      interval: Infinity,
+      interval: savedInterval,
       datasets,
       showDatasetCreation: false,
       sessionLimitEnabled: false,
@@ -91,6 +96,7 @@ export default class MainMenu extends React.Component<IProps, IState> {
 
   setInterval = (interval: number) => {
     this.setState({ interval });
+    setSettings({ ...getSettings(), interval });
   };
 
   start = (sessionLimitEnabled: boolean, sessionImageCount: number) => {

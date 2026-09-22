@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getSettings, setSettings } from "../utils/localStorage";
 import { AutoButtonGroup } from "./ButtonGroup";
 
@@ -35,6 +35,9 @@ const intervals = [
 const formatContrastMultiplierText = (value: number) =>
   value === 1 ? "Off" : `x${value}`;
 
+const formatIntervalText = (interval?: number) =>
+  interval === Infinity ? "-" : interval == null ? "" : String(interval);
+
 export function IntervalSelector(props: IProps) {
   const settings = getSettings();
   const [showImagePath, setShowImagePath] = useState<boolean>(
@@ -46,6 +49,17 @@ export function IntervalSelector(props: IProps) {
     settings.contrastMultiplier ?? 1,
   );
   const [sessionCount, setSessionCount] = useState(0);
+  const [intervalText, setIntervalText] = useState<string>(
+    formatIntervalText(props.selectedInterval),
+  );
+
+  useEffect(() => {
+    setIntervalText((current) =>
+      parseFloat(current) === props.selectedInterval
+        ? current
+        : formatIntervalText(props.selectedInterval),
+    );
+  }, [props.selectedInterval]);
 
   const toggleShowImagePath = (event: React.ChangeEvent<HTMLInputElement>) => {
     const showImagePath = event.target.checked;
@@ -101,16 +115,19 @@ export function IntervalSelector(props: IProps) {
           <Input
             size="small"
             onChange={(e) => {
-              const value = e.target.value || "";
-              if (!value) return props.onSetInterval(Infinity);
-              const interval = +value.replace("-", "");
-              !isNaN(interval) && interval > 0 && props.onSetInterval(interval);
+              const raw = e.target.value;
+              if (!raw) {
+                setIntervalText("");
+                return props.onSetInterval(Infinity);
+              }
+              const sanitized =
+                raw.replace(/[^\d.]/g, "").match(/^\d*(?:\.\d?)?/)?.[0] ?? "";
+              setIntervalText(sanitized);
+              const interval = parseFloat(sanitized);
+              if (!isNaN(interval) && interval > 0)
+                props.onSetInterval(interval);
             }}
-            value={
-              props.selectedInterval === Infinity
-                ? "-"
-                : (props.selectedInterval ?? "")
-            }
+            value={intervalText}
             sx={{
               mx: 1,
               maxWidth: "5rem",

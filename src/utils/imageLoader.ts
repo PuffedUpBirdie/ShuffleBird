@@ -8,6 +8,8 @@ export class ImageLoader {
   //  ToDo: Add buffering to loader;
   private readonly buffer: LimitedBuffer;
   private readonly stack: string[] = [];
+  private shuffleQueue: string[] = [];
+  private shufflePosition = 0;
 
   private position?: number = undefined;
   /**
@@ -24,20 +26,22 @@ export class ImageLoader {
       return img;
     });
 
-  getRandomFilename = () => {
-    const randomImageIndex = Math.floor(Math.random() * this.files.length);
-    return this.files[randomImageIndex];
+  shuffle = (items: string[]): string[] => {
+    const result = [...items];
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
   };
 
   getNewFilename = (): string => {
-    const filename = this.getRandomFilename();
+    if (this.shufflePosition >= this.shuffleQueue.length) {
+      this.shuffleQueue = this.shuffle(this.files);
+      this.shufflePosition = 0;
+    }
 
-    // If we got the same file as the last one and we have more than one image
-    // try to get a different one for a better "randomization"
-    if (filename === this.stack[this.position] && this.files.length > 1)
-      return this.getNewFilename();
-
-    return filename;
+    return this.shuffleQueue[this.shufflePosition++];
   };
 
   retrieveFile = async (filename: string) => {
